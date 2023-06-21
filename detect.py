@@ -7,12 +7,11 @@ plt.rcParams['axes.unicode_minus'] = False
 output_image = Image.open("output.png")
 output_array = np.array(output_image)
 
-# 转换为灰度图像
-gray_image = output_image.convert("L")
-gray_array = np.array(gray_image)
+# 提取红色通道
+red_channel = output_array[:, :, 0]
 
 # 进行傅里叶变换和频率中心化
-fourier_transform = np.fft.fft2(gray_array)
+fourier_transform = np.fft.fft2(red_channel)
 shifted_transform = np.fft.fftshift(fourier_transform)
 
 # 计算频域图像的幅度谱
@@ -20,5 +19,5 @@ magnitude_spectrum = np.abs(shifted_transform)
 
 # 可视化频域图像
 plt.imshow(np.log(1 + magnitude_spectrum), cmap='gray')
-plt.title('频域')
+plt.title('红色通道频域')
 plt.show()
