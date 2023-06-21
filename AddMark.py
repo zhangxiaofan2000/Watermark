@@ -24,7 +24,7 @@ def add_watermark(original_image_path, watermark_image_path, output_image_path):
 
     # 在中心化的傅里叶变换结果上标记水印位置
     marked_transform = np.copy(shifted_transform)
-    marked_transform[watermark_indices[0] + 100, watermark_indices[1] + 100] = 1
+    marked_transform[watermark_indices[0] + 10, watermark_indices[1] + 10] = 1
 
     # 对标记了水印的傅里叶变换结果进行逆变换得到水印图像
     marked_image = np.fft.ifft2(np.fft.ifftshift(marked_transform))
@@ -39,4 +39,4 @@ def add_watermark(original_image_path, watermark_image_path, output_image_path):
     result_image.save(output_image_path)
 
 # 调用函数添加水印并保存结果彩色图像
-add_watermark("test.png", "watermark.png", "output.png")
+add_watermark("原图.jpg", "水印.jpg", "output.png")
