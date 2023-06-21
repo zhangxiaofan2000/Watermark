@@ -79,4 +79,4 @@ def add_watermark(original_image_path, watermark_image_path, output_image_path):
     plt.show()
 
 # 调用函数添加水印并保存结果图像
-add_watermark("原图.jpg", "watermark.png", "output.png")
+add_watermark("原图.jpg", "水印.jpg", "output.png")
