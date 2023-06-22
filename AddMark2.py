@@ -41,14 +41,16 @@ def add_watermark(original_image_path, watermark_image_path, output_image_path):
     ax[2].set_title("中心化的傅里叶变换结果")
     plt.show()
 
-    # 将水印图像转换为灰度图像并提取出水印位置
-    watermark_array = np.array(watermark_image.convert('L'))
-    watermark_indices = np.where(watermark_array == 0)
+    # 将水印图像转换为灰度图像
+    watermark_image_gray = watermark_image.convert('L')
+    # 将灰度图像转换为NumPy数组
+    watermark_array = np.array(watermark_image_gray)
 
     # 在中心化的傅里叶变换结果上标记水印位置
     marked_transform = np.copy(shifted_transform)
-    marked_transform[watermark_indices[0] + 10, watermark_indices[1] + 10] = 1
-
+    for i, row in enumerate(watermark_array):
+        for j, column in enumerate(row):
+            marked_transform[i + 2, j + 2] = watermark_array[i, j]
     # 显示中心化的傅里叶变换结果和标记了水印的傅里叶变换结果
     fig, ax = plt.subplots(ncols=2, sharey=True)
     ax[0].imshow(np.log(abs(shifted_transform)))
@@ -79,4 +81,4 @@ def add_watermark(original_image_path, watermark_image_path, output_image_path):
     plt.show()
 
 # 调用函数添加水印并保存结果图像
-add_watermark("原图.jpg", "水印.jpg", "output.png")
+add_watermark("原图.jpg", "watermark.png", "output.png")
