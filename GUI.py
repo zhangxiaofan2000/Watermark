@@ -1,10 +1,11 @@
 import tkinter as tk
 from tkinter import filedialog
+
+import cv2
 from PIL import Image, ImageTk
 import numpy as np
 import matplotlib.pyplot as plt
-
-from watermark_adder import WatermarkAdder
+from detect_tampering import detect_tampering
 
 # 解决中文显示问题
 plt.rcParams['font.sans-serif'] = ['SimHei']
@@ -17,12 +18,10 @@ class WatermarkApp(tk.Tk):
         self.title("水印应用")
         self.geometry("1050x550")
         # 图片路径变量
-        self.original_image_path = tk.StringVar()
-        self.watermark_image_path = tk.StringVar()
-        self.output_image_path = tk.StringVar()
-        self.tampering_image_path = tk.StringVar()
-
-
+        self.original_image_path = str()
+        self.watermark_image_path = str()
+        self.output_image_path = str()
+        self.tampering_image_path = str()
         # 创建界面组件
         self.create_widgets()
 
@@ -58,7 +57,7 @@ class WatermarkApp(tk.Tk):
 
         # 篡改位置检测
         self.detect_tampering_button = tk.Button(
-            button_frame, text="篡改位置检测", command=self.detect_tampering)
+            button_frame, text="篡改位置检测", command=self.detect_tampering_button)
         self.detect_tampering_button.pack(side=tk.LEFT)
 
         # 原始图片展示区域
@@ -110,7 +109,7 @@ class WatermarkApp(tk.Tk):
         file_path = filedialog.askopenfilename(
             filetypes=[("Image Files", "*.jpg;*.jpeg;*.png")])
 
-        self.original_image_path.set(file_path)
+        self.original_image_path = file_path
         self.show_image_path(self.original_image_label, file_path)
         original_image = Image.open(file_path)
         red_channel = np.array(original_image)[:, :, 0]
@@ -134,7 +133,7 @@ class WatermarkApp(tk.Tk):
         # 选择水印图片文件
         file_path = filedialog.askopenfilename(
             filetypes=[("Image Files", "*.jpg;*.jpeg;*.png")])
-        self.watermark_image_path.set(file_path)
+        self.watermark_image_path= file_path
         self.show_image_path(self.watermark_image_label, file_path)
 
 
@@ -162,8 +161,11 @@ class WatermarkApp(tk.Tk):
             # 将水印图像与原始图像的彩色通道合并
             output_image = np.array(original_image)
             output_image[:, :, 0] = marked_image
+
             # 保存最后添加水印的彩色图片
             self.result_image = Image.fromarray(output_image)
+            self.result_image.save("output.png")
+
             # 显示添加水印后的结果图片
             self.show_image(self.output_image_label, self.result_image)
 
@@ -188,14 +190,20 @@ class WatermarkApp(tk.Tk):
         # 创建灰度图像对象
         gray_image_obj = Image.fromarray(gray_image, mode='L')
         self.show_image(self.watermark_detection_label, gray_image_obj)
+    def detect_tampering_button(self):
+        detect_tampering_obj  = detect_tampering()
+        # 调用函数进行篡改检测和区域定位
+        result_image = detect_tampering_obj.detect_tampering("output.png",self.tampering_image_path)
+        cv2.imwrite("result_image.png", result_image)
+        self.show_image_path(self.location_detection_label, "result_image.png")
 
 
     def upload_tampering_image(self):
-        # 选择原始图片文件
+        # 选择被篡改图片文件
         file_path = filedialog.askopenfilename(
             filetypes=[("Image Files", "*.jpg;*.jpeg;*.png")])
 
-        self.tampering_image_path.set(file_path)
+        self.tampering_image_path= file_path
         self.show_image_path(self.tampering_image_label, file_path)
 
 
