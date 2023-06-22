@@ -15,7 +15,7 @@ plt.rcParams['axes.unicode_minus'] = False
 class WatermarkApp(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("水印应用")
+        self.title("频域水印")
         self.geometry("1050x550")
         # 图片路径变量
         self.original_image_path = str()
